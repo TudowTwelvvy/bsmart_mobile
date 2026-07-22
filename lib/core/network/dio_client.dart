@@ -1,9 +1,12 @@
+import 'package:bsmart_mobile/core/utils/secure_storage.dart';
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 
 class DioClient {
   late final Dio _dio;
   final Logger _logger = Logger();
+
+  final SecureStorageService _secureStorage = SecureStorageService();
 
   DioClient() {
     _dio = Dio(
@@ -57,10 +60,10 @@ class DioClient {
     return InterceptorsWrapper(
       onRequest: (options, handler) async {
         //Read token from secure storage
-        // final token = await _secureStorage.read(key: 'auth_token');
-        // if (token != null) {
-        //   options.headers['Authorization'] = 'Bearer $token';
-        // }
+        final token = await _secureStorage.read(key: 'auth_token');
+        if (token != null) {
+          options.headers['Authorization'] = 'Bearer $token';
+        }
         handler.next(options);
       },
     );
